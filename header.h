@@ -79,14 +79,14 @@ typedef struct		s_brain
 typedef struct		s_game
 {
 	//массив клеточек с флагами заполненности
-	double			pos[N_INPUT];
+	double			map[N_INPUT];
 	double			weight[MAP_H];
 	double			g_story[MAP_H];
 	double			c_story[MAP_H];
 	int				partition;
 	int				gamer_pos;
 	int				curr_pos;
-
+	t_brain			*brain;
 }					t_game;
 
 typedef enum	e_direction
@@ -97,12 +97,20 @@ typedef enum	e_direction
 	DIR_COUNT
 }				t_dir;
 
-t_game	init_game();
+t_game	init_game(t_brain *brain);
 void	set_new_current(t_game *game);
 void	print_map(t_game game);
 t_bool	move_current(t_game *game);
 void	move_gamer(t_game *game, t_dir dir);
 void	save_position(t_game *game);
-void	run_one_game(t_game *game);
+void	run_one_game(t_game *game, t_bool need_print);
+
+void	set_input(t_brain *brain, double *input);
+void	set_output(t_brain *brain, double *output);
+void	init_brain(t_brain *brain, t_layer *layer, int layer_count);
+t_dir	get_dicision(t_brain *brain);
+void	calculate_brain(t_brain *brain);
+
+void	init_layer(t_layer *layer, int n_count, int w_n_count);
 
 #endif //NEURO_KOKOHEN_HEADER_H

@@ -14,13 +14,13 @@ void	set_new_current(t_game *game) {
 	game->curr_pos = rand() % MAP_W;
 }
 
-t_game	init_game() {
+t_game	init_game(t_brain *brain) {
 	t_game game;
 	int i;
 
 	i = 0;
 	while (i < N_INPUT) {
-		game.pos[i] = 0.0;
+		game.map[i] = 0.0;
 		i++;
 	}
 	i = 0;
@@ -31,6 +31,7 @@ t_game	init_game() {
 	game.gamer_pos = N_INPUT - MAP_W / 2 - 1;
 	srand(time(NULL));
 	game.curr_pos = -1;
+	game.brain = brain;
 	return (game);
 }
 
@@ -82,16 +83,30 @@ void	move_gamer(t_game *game, t_dir dir) {
 		game->gamer_pos++;
 }
 
-//потом надо будет изменить функию так, чтоб она ответ из нейросети получала
-t_dir	make_dicision() {
-	return (rand() % 3);
+void	set_pos_on_map(t_game *game) {
+	game->map[game->gamer_pos] = 1.0;
+	game->map[game->curr_pos] = 1.0;
+}
+void	clear_map(t_game *game) {
+	game->map[game->gamer_pos] = 0.0;
+	game->map[game->curr_pos] = 0.0;
 }
 
-void	run_one_game(t_game *game) {
+//потом надо будет изменить функию так, чтоб она ответ из нейросети получала
+t_dir	make_dicision(t_game *game) {
+	set_pos_on_map(game);
+	set_input(game->brain, game->map);
+	calculate_brain(game->brain);
+	clear_map(game);
+	return (get_dicision(game->brain));
+}
+
+void	run_one_game(t_game *game, t_bool need_print) {
 	set_new_current(game);
 	while(move_current(game)) {
-		move_gamer(game, make_dicision());
-		print_map(*game);
+		move_gamer(game, make_dicision(game));
+		if (need_print)
+			print_map(*game);
 		save_position(game);
 	}
 }

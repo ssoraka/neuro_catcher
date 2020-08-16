@@ -122,6 +122,10 @@ void	set_input(t_brain *brain, double *input) {
 void	set_output(t_brain *brain, double *output) {
 	brain->output = output;
 }
+void	init_brain(t_brain *brain, t_layer *layer, int layer_count) {
+	brain->layer = layer;
+	brain->layers_count = layer_count;
+}
 
 t_dir	get_dicision(t_brain *brain) {
 	int i;
