@@ -19,6 +19,12 @@ double df_dx(double fx)
 	return (fx * (1 - fx));
 }
 
+// Производная от функции активации
+double dsoftmax_dsumm(double error)
+{
+	return (-error);
+}
+
 void	init_layer(t_layer *layer, int n_count, int w_n_count) {
 	int i;
 	int j;
@@ -59,7 +65,31 @@ void calculate_layer(double const *f_prev, t_layer *layer) {
 	}
 }
 
+void calculate_softmax_layer(double const *f_prev, t_layer *layer) {
+	int i;
+	int j;
+	double sum;
+	double sum_f;
 
+	sum_f = 0;
+	i = 0;
+	while (i < layer->i_n) {
+		sum = 0.0;
+		j = 0;
+		while (j < layer->j_n) {
+			sum += layer->w_ij[i][j] * f_prev[j];
+			j++;
+		}
+		layer->f[i] = exp(sum);
+		sum_f += layer->f[i];
+		i++;
+	}
+	i = 0;
+	while (i < layer->i_n) {
+		layer->f[i] /= sum_f;
+		i++;
+	}
+}
 
 void calculate_out_error(double const *t, t_layer *layer) {
 	int i;
@@ -99,6 +129,25 @@ void change_weight(double *f_prev, t_layer *layer) {
 		j = 0;
 		while (j < j_n) {
 			layer->w_ij[i][j] += layer->error[i] * df_dx(layer->f[i]) * f_prev[j] * ALPHA;
+			j++;
+		}
+		i++;
+	}
+}
+
+void change_softmax_weight(double *f_prev, t_layer *layer) {
+	int i;
+	int j;
+	int i_n;
+	int j_n;
+
+	i_n = layer->i_n;
+	j_n = layer->j_n;
+	i = 0;
+	while (i < i_n) {
+		j = 0;
+		while (j < j_n) {
+			layer->w_ij[i][j] += layer->error[i] * (-layer->error[i]) * f_prev[j] * ALPHA;
 			j++;
 		}
 		i++;
