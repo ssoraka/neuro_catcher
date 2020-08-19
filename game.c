@@ -110,3 +110,9 @@ void	run_one_game(t_game *game, t_bool need_print) {
 		save_position(game);
 	}
 }
+
+int		strategy_evaluation(t_game *game) {
+	if (game->gamer_pos - MAP_W == game->curr_pos)
+		return(1);
+	return (-1);
+}

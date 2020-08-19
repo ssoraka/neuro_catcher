@@ -25,10 +25,11 @@ double dsoftmax_dsumm(double error)
 	return (-error);
 }
 
-void	init_layer(t_layer *layer, int n_count, int w_n_count) {
+void	init_layer(t_layer *layer, int n_count, int w_n_count, t_type type) {
 	int i;
 	int j;
 
+	layer->type = type;
 	layer->i_n = n_count;
 	layer->j_n = w_n_count;
 	layer->func = f;
@@ -195,12 +196,18 @@ t_dir	get_dicision(t_brain *brain) {
 void	calculate_brain(t_brain *brain) {
 	int i;
 	double *f_prev;
+	t_layer *layer;
 
 	f_prev = brain->input;
+	layer = brain->layer;
 	i = 0;
 	while (i < brain->layers_count) {
-		calculate_layer(f_prev, brain->layer + i);
-		f_prev = brain->layer[i].f;
+		if (layer->type == SIMPLE)
+			calculate_layer(f_prev, layer);
+		if (layer->type == SOFTMAX)
+			calculate_softmax_layer(f_prev, layer);
+		f_prev = layer->f;
+		layer++;
 		i++;
 	}
 }
@@ -210,6 +217,7 @@ void	teaching_brain(t_brain *brain) {
 	double *f_prev;
 	double *f_out;
 	t_layer *out;
+	t_layer *layer;
 
 	//высчисляем ошибку последнего слоя
 	out = brain->layer + (brain->layers_count - 1);
@@ -217,18 +225,25 @@ void	teaching_brain(t_brain *brain) {
 	calculate_out_error(f_out, out);
 
 	//высчисляем ошибку скрытых слоев
+	layer = brain->layer;
 	i = brain->layers_count - 1;
 	while (i > 0) {
-		calculate_hidden_error(brain->layer + i, brain->layer + i - 1);
+		calculate_hidden_error(layer, layer - 1);
+		layer++;
 		i--;
 	}
 
 	//меняем веса связей
+	layer = brain->layer;
 	f_prev = brain->input;
 	i = 0;
 	while (i < brain->layers_count) {
-		change_weight(f_prev, brain->layer + i);
-		f_prev = brain->layer[i].f;
+		if (layer->type == SIMPLE)
+			change_weight(f_prev, layer);
+		if (layer->type == SOFTMAX)
+			change_softmax_weight(f_prev, layer);
+		f_prev = layer->f;
+		layer++;
 		i++;
 	}
 }

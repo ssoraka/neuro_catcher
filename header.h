@@ -63,6 +63,7 @@ typedef struct		s_layer
 	int				j_n;
 	// массив связей размером i_count * j_count (зарезервировал 10000 на просто для удобства)
 	double			w_ij[N_MAX_IN_LAYER][N_MAX_IN_LAYER];
+	int				type;
 }					t_layer;
 
 //структура слоя
@@ -97,6 +98,13 @@ typedef enum	e_direction
 	DIR_COUNT
 }				t_dir;
 
+typedef enum	e_type
+{
+	SIMPLE,
+	SOFTMAX,
+	TYPE_COUNT
+}				t_type;
+
 t_game	init_game(t_brain *brain);
 void	set_new_current(t_game *game);
 void	print_map(t_game game);
@@ -104,13 +112,16 @@ t_bool	move_current(t_game *game);
 void	move_gamer(t_game *game, t_dir dir);
 void	save_position(t_game *game);
 void	run_one_game(t_game *game, t_bool need_print);
+int		strategy_evaluation(t_game *game);
 
 void	set_input(t_brain *brain, double *input);
 void	set_output(t_brain *brain, double *output);
 void	init_brain(t_brain *brain, t_layer *layer, int layer_count);
 t_dir	get_dicision(t_brain *brain);
 void	calculate_brain(t_brain *brain);
+void	teaching_brain(t_brain *brain);
 
-void	init_layer(t_layer *layer, int n_count, int w_n_count);
+void	print_arr_double(double *arr, int size);
+void	init_layer(t_layer *layer, int n_count, int w_n_count, t_type type);
 
 #endif //NEURO_KOKOHEN_HEADER_H

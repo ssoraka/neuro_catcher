@@ -10,12 +10,23 @@ int main() {
 	t_layer layer[2];
 
 	init_brain(&brain, layer, 2);
-	init_layer(layer, N_HIDDEN, N_INPUT);
-	init_layer(layer + 1, DIR_COUNT, N_HIDDEN);
+	init_layer(layer, N_HIDDEN, N_INPUT, SIMPLE);
+	init_layer(layer + 1, DIR_COUNT, N_HIDDEN, SOFTMAX);
 	game = init_game(&brain);
 
 	//это написал нормально вроде
 	run_one_game(&game, TRUE);
+
+//	int eval = strategy_evaluation(&game);
+	calculate_brain(&brain);
+	teaching_brain(&brain);
+
+
+
+	print_arr_double(game.g_story, MAP_H);
+	print_arr_double(game.c_story, MAP_H);
+
+
 	//надо ошибку последнего слоя получать из перекрестной энтропии
 	//по награде среды агенту
 	//was_game_winned(&game)
