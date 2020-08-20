@@ -37,7 +37,6 @@ void	init_layer(t_layer *layer, int n_count, int w_n_count, t_type type) {
 	srand(time(NULL));
 	i = 0;
 	while (i < n_count) {
-		layer->f[i] = 0.0;
 		layer->error[i] = 0.0;
 		j = 0;
 		while (j < w_n_count) {
@@ -46,6 +45,7 @@ void	init_layer(t_layer *layer, int n_count, int w_n_count, t_type type) {
 		}
 		i++;
 	}
+	fill_arr(layer->f, n_count, 0.0);
 }
 
 void calculate_layer(double const *f_prev, t_layer *layer) {
@@ -165,6 +165,16 @@ void	print_arr_double(double *arr, int size) {
 	}
 	printf("\n");
 }
+void	print_arr_int(int *arr, int size) {
+	int i;
+
+	i = 0;
+	while (i < size) {
+		printf("%2d ", arr[i]);
+		i++;
+	}
+	printf("\n");
+}
 
 void	set_input(t_brain *brain, double *input) {
 	brain->input = input;
@@ -247,7 +257,4 @@ void	teaching_brain(t_brain *brain) {
 		i++;
 	}
 }
-
-
-
 

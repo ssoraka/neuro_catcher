@@ -40,13 +40,28 @@ typedef int t_bool;
 // Число нейронов в скрытом слое
 #define N_MAX_IN_LAYER (100)
 // Скорость обучения
-#define ALPHA 0.5
+#define ALPHA 0.05
 // Количество эпох обучения
 #define LAST_ERA 7000
 
-char g_letters[ANSWER_COUNT * LETTER_HEIGHT * LETTER_WIDTH];
-double input[LETTER_IN_STRING * STRING_COUNT][N_INPUT];
-char g_ru_letter[ANSWER_COUNT][5];
+typedef enum	e_direction
+{
+	DONT_MOVE,
+	LEFT,
+	RIGHT,
+	DIR_COUNT
+}				t_dir;
+
+typedef enum	e_type
+{
+	SIMPLE,
+	SOFTMAX,
+	TYPE_COUNT
+}				t_type;
+
+//char g_letters[ANSWER_COUNT * LETTER_HEIGHT * LETTER_WIDTH];
+//double input[LETTER_IN_STRING * STRING_COUNT][N_INPUT];
+//char g_ru_letter[ANSWER_COUNT][5];
 
 //структура слоя
 typedef struct		s_layer
@@ -80,30 +95,21 @@ typedef struct		s_brain
 typedef struct		s_game
 {
 	//массив клеточек с флагами заполненности
-	double			map[N_INPUT];
+	double			input[N_INPUT];
+	double			output[DIR_COUNT];
 	double			weight[MAP_H];
-	double			g_story[MAP_H];
-	double			c_story[MAP_H];
+	int				reward;
+	int				g_story[MAP_H];
+	int				c_story[MAP_H];
+	int				a_story[MAP_H];
 	int				partition;
 	int				gamer_pos;
 	int				curr_pos;
+	int				action;
 	t_brain			*brain;
 }					t_game;
 
-typedef enum	e_direction
-{
-	DONT_MOVE,
-	LEFT,
-	RIGHT,
-	DIR_COUNT
-}				t_dir;
 
-typedef enum	e_type
-{
-	SIMPLE,
-	SOFTMAX,
-	TYPE_COUNT
-}				t_type;
 
 t_game	init_game(t_brain *brain);
 void	set_new_current(t_game *game);
@@ -112,7 +118,9 @@ t_bool	move_current(t_game *game);
 void	move_gamer(t_game *game, t_dir dir);
 void	save_position(t_game *game);
 void	run_one_game(t_game *game, t_bool need_print);
-int		strategy_evaluation(t_game *game);
+void	set_pos_on_map_from_store(t_game *game, int ex);
+void	clear_map_from_store(t_game *game, int ex);
+int		get_reward(t_game *game);
 
 void	set_input(t_brain *brain, double *input);
 void	set_output(t_brain *brain, double *output);
@@ -121,7 +129,9 @@ t_dir	get_dicision(t_brain *brain);
 void	calculate_brain(t_brain *brain);
 void	teaching_brain(t_brain *brain);
 
+void	fill_arr(double *arr, int count, double value);
 void	print_arr_double(double *arr, int size);
+void	print_arr_int(int *arr, int size);
 void	init_layer(t_layer *layer, int n_count, int w_n_count, t_type type);
 
 #endif //NEURO_KOKOHEN_HEADER_H
