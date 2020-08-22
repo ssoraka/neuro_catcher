@@ -3,6 +3,20 @@
 //
 #include "header.h"
 
+void print_layer(t_layer *layer) {
+	int i = 0;
+	while ( i < layer->i_n) {
+		int j = 0;
+		while ( j < layer->j_n) {
+			printf("%lf, ", layer->w_ij[i][j]);
+			j++;
+		}
+		i++;
+	}
+	printf("\n");
+}
+
+
 // Функция активации
 double f(double x)
 {
@@ -64,6 +78,7 @@ void calculate_layer(double const *f_prev, t_layer *layer) {
 		layer->f[i] = layer->func(sum);
 		i++;
 	}
+//	print_arr_double(layer->f, layer->i_n);
 }
 
 void calculate_softmax_layer(double const *f_prev, t_layer *layer) {
@@ -90,13 +105,15 @@ void calculate_softmax_layer(double const *f_prev, t_layer *layer) {
 		layer->f[i] /= sum_f;
 		i++;
 	}
+//	print_arr_double(layer->f, layer->i_n);
 }
 
 void calculate_out_error(double const *t, t_layer *layer) {
 	int i;
 
+	i = 0;
 	while (i < layer->i_n) {
-		layer->error[i] = t[i] - layer->f[i];
+		layer->error[i] = t[i];
 		i++;
 	}
 }

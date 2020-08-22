@@ -32,8 +32,8 @@ t_game	init_game(t_brain *brain) {
 	fill_arr(game.input, N_INPUT, 0.0);
 	fill_arr(game.output, DIR_COUNT, 0.0);
 	i = 0;
-	while (i < MAP_H) {
-		game.weight[i] = pow(0.95, (double)(MAP_H - i));
+	while (i < STORE) {
+		game.weight[i] = pow(0.95, (double)(STORE - i));
 		i++;
 	}
 	game.gamer_pos = N_INPUT - MAP_W / 2 - 1;
@@ -43,7 +43,7 @@ t_game	init_game(t_brain *brain) {
 	return (game);
 }
 
-void	print_map(t_game game) {
+void	print_map(t_game *game) {
 	int n;
 
 	printf("=========\n");
@@ -53,9 +53,9 @@ void	print_map(t_game game) {
 		if (n % MAP_W == 0) {
 			printf("|");
 		}
-		if (n == game.gamer_pos - MAP_W)
+		if (n == game->gamer_pos - MAP_W)
 			printf("\033[7;37m%s\033[00m", "U");
-		else if (n == game.curr_pos)
+		else if (n == game->curr_pos)
 			printf("\033[7;37m%s\033[00m", "X");
 		else
 			printf(" ");
@@ -69,8 +69,6 @@ void	print_map(t_game game) {
 }
 
 t_bool	move_current(t_game *game) {
-	if (game->partition == 0)
-		return (TRUE);
 	if (game->curr_pos + MAP_W >= N_POS)
 		return (FALSE);
 	game->curr_pos += MAP_W;
@@ -111,8 +109,6 @@ void	clear_map_from_store(t_game *game, int ex) {
 }
 
 t_dir	make_dicision(t_game *game) {
-	if (game->partition == 0)
-		return (DONT_MOVE);
 	set_pos_on_map(game);
 	set_input(game->brain, game->input);
 	calculate_brain(game->brain);
@@ -122,12 +118,16 @@ t_dir	make_dicision(t_game *game) {
 
 void	run_one_game(t_game *game, t_bool need_print) {
 	set_new_current(game);
+	if (need_print)
+		print_map(game);
+
 	while(move_current(game)) {
 		game->action = make_dicision(game);
 		move_gamer(game, game->action);
-		if (need_print)
-			print_map(*game);
 		save_position(game);
+
+		if (need_print)
+			print_map(game);
 	}
 }
 

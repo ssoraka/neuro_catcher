@@ -29,18 +29,19 @@ typedef int t_bool;
 
 // Параметры НС
 // высота карты
-#define MAP_H 7
+#define MAP_H 5
 // ширина карты
 #define MAP_W (MAP_H)
 // Число входов,
 #define N_POS (MAP_H * MAP_W)
 #define N_INPUT (N_POS + MAP_W)
+#define STORE (MAP_H - 1)
 // Число нейронов в скрытом слое
-#define N_HIDDEN (100)
+#define N_HIDDEN (30)
 // Число нейронов в скрытом слое
 #define N_MAX_IN_LAYER (100)
 // Скорость обучения
-#define ALPHA 0.05
+#define ALPHA 0.01
 // Количество эпох обучения
 #define LAST_ERA 7000
 
@@ -97,11 +98,11 @@ typedef struct		s_game
 	//массив клеточек с флагами заполненности
 	double			input[N_INPUT];
 	double			output[DIR_COUNT];
-	double			weight[MAP_H];
+	double			weight[STORE];
 	int				reward;
-	int				g_story[MAP_H];
-	int				c_story[MAP_H];
-	int				a_story[MAP_H];
+	int				g_story[STORE];
+	int				c_story[STORE];
+	int				a_story[STORE];
 	int				partition;
 	int				gamer_pos;
 	int				curr_pos;
@@ -113,7 +114,7 @@ typedef struct		s_game
 
 t_game	init_game(t_brain *brain);
 void	set_new_current(t_game *game);
-void	print_map(t_game game);
+void	print_map(t_game *game);
 t_bool	move_current(t_game *game);
 void	move_gamer(t_game *game, t_dir dir);
 void	save_position(t_game *game);
