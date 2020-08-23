@@ -58,15 +58,21 @@ int main() {
 		ep++;
 	}*/
 
-	printf("first\n");
 
+	printf("first\n");
+	int points[2] = {0,0};
 	int ep;
 
 	ep = 0;
-	while (ep < 1000) {
-		run_one_game(&game, TRUE);
+	while (ep < 50000) {
+		run_one_game(&game, FALSE);
 		game.reward = get_reward(&game);
-
+		if (game.reward == 1) {
+			points[0]++;
+		} else {
+			points[1]++;
+		}
+		printf("+ %d_ - %d | %lf\n", points[0], points[1], ((double)points[0]) / (points[1] + points[0]));
 		int example = 0;
 		while (example < STORE) {
 			//восстанавливаем
@@ -78,11 +84,15 @@ int main() {
 			clear_map_from_store(&game, example);
 			example++;
 		}
-		//game.gamer_pos = N_INPUT - MAP_W / 2 - 1;
+		game.gamer_pos = N_INPUT - MAP_W / 2 - 1;
 		ep++;
 	}
-	printf("third\n");
 	run_one_game(&game, TRUE);
-
+	game.gamer_pos = N_INPUT - MAP_W / 2 - 1;
+	run_one_game(&game, TRUE);
+	game.gamer_pos = N_INPUT - MAP_W / 2 - 1;
+	run_one_game(&game, TRUE);
+	//print_layer_weight(layer + 1);
+	print_arr_double(layer[1].f, 3);
 	return 0;
 }

@@ -3,20 +3,6 @@
 //
 #include "header.h"
 
-void print_layer(t_layer *layer) {
-	int i = 0;
-	while ( i < layer->i_n) {
-		int j = 0;
-		while ( j < layer->j_n) {
-			printf("%lf, ", layer->w_ij[i][j]);
-			j++;
-		}
-		i++;
-	}
-	printf("\n");
-}
-
-
 // Функция активации
 double f(double x)
 {
@@ -127,7 +113,7 @@ void calculate_hidden_error(t_layer *next, t_layer *current) {
 		current->error[j] = 0.0;
 		i = 0;
 		while (i < next->i_n) {
-			current->error[j] += next->w_ij[i][j] * next->error[i];
+			current->error[j] += next->f[i] - next->error[i];
 			i++;
 		}
 		j++;
@@ -165,11 +151,30 @@ void change_softmax_weight(double *f_prev, t_layer *layer) {
 	while (i < i_n) {
 		j = 0;
 		while (j < j_n) {
-			layer->w_ij[i][j] += layer->error[i] * (-layer->error[i]) * f_prev[j] * ALPHA;
+			layer->w_ij[i][j] += layer->error[i] * f_prev[j] * ALPHA;
 			j++;
 		}
 		i++;
 	}
+}
+
+void	print_layer_weight(t_layer *layer) {
+	int i;
+
+	if (layer->type == SOFTMAX)
+		printf("softmax\n");
+	if (layer->type == SIMPLE)
+		printf("simple\n");
+	i = 0;
+	while ( i < layer->i_n) {
+		int j = 0;
+		while ( j < layer->j_n) {
+			printf("%lf, ", layer->w_ij[i][j]);
+			j++;
+		}
+		i++;
+	}
+	printf("\n");
 }
 
 void	print_arr_double(double *arr, int size) {

@@ -12,7 +12,8 @@ void	save_position(t_game *game) {
 
 void	set_new_current(t_game *game) {
 	game->partition = 0;
-	game->curr_pos = 1;//rand() % MAP_W;
+//	game->curr_pos = 1;//rand() % MAP_W;
+	game->curr_pos = rand() % MAP_W;
 }
 
 void	fill_arr(double *arr, int count, double value) {
@@ -43,10 +44,21 @@ t_game	init_game(t_brain *brain) {
 	return (game);
 }
 
+void	print_line() {
+	int i;
+
+	i = -2;
+	while (i < MAP_W) {
+		printf("=");
+		i++;
+	}
+	printf("\n");
+}
+
 void	print_map(t_game *game) {
 	int n;
 
-	printf("=========\n");
+	print_line();
 
 	n = 0;
 	while (n < N_POS) {
@@ -65,7 +77,47 @@ void	print_map(t_game *game) {
 		}
 		n++;
 	}
-	printf("=========\n\n");
+	print_line();
+	printf("\n");
+}
+
+void	prepare_buffer(t_game *game) {
+	char *buffer;
+	int i;
+
+	buffer = game->buffer;
+	i = 0;
+	while(i < ((MAP_W + 2) * (STORE + 1) + 1) * (MAP_H + 2)) {
+		int x = i % ((MAP_W + 2) * (STORE + 1) + 1);
+		int y = i / ((MAP_W + 2) * (STORE + 1) + 1);
+
+		if (x == (MAP_W + 2) * (STORE + 1) + 0)
+			buffer[i] = '\n';
+		else if (y == 0 || y == MAP_H + 1)
+			buffer[i] = '=';
+		else if (x % (MAP_W + 2) == 0 || x % (MAP_W + 2) == MAP_W + 1)
+			buffer[i] = '|';
+		else
+			buffer[i] = ' ';
+		i++;
+	}
+	buffer[((MAP_W + 2) * (STORE + 1) + 1) * (MAP_H + 2)] = '\0';
+}
+
+void	set_pos_in_buffer(t_game *game, int step) {
+	char *buffer;
+	int x;
+	int y;
+
+	buffer = game->buffer;
+
+	x = (MAP_W + 2) * step + (game->curr_pos) % MAP_W + 1;
+	y = game->curr_pos / MAP_W + 1;
+	buffer[y * ((MAP_W + 2) * (STORE + 1) + 1) + x] = 'X';
+
+	x = (MAP_W + 2) * step + (game->gamer_pos) % MAP_W + 1;
+	y = game->gamer_pos / MAP_W;
+	buffer[y * ((MAP_W + 2) * (STORE + 1) + 1) + x] = 'U';
 }
 
 t_bool	move_current(t_game *game) {
@@ -118,8 +170,11 @@ t_dir	make_dicision(t_game *game) {
 
 void	run_one_game(t_game *game, t_bool need_print) {
 	set_new_current(game);
-	if (need_print)
-		print_map(game);
+	if (need_print){
+		prepare_buffer(game);
+		set_pos_in_buffer(game, 0);
+	}
+		//print_map(game);
 
 	while(move_current(game)) {
 		game->action = make_dicision(game);
@@ -127,8 +182,10 @@ void	run_one_game(t_game *game, t_bool need_print) {
 		save_position(game);
 
 		if (need_print)
-			print_map(game);
+			set_pos_in_buffer(game, game->partition);
 	}
+	if (need_print)
+		printf("%s\n", game->buffer);
 }
 
 int		get_reward(t_game *game) {

@@ -2,8 +2,8 @@
 // Created by ssoraka on 15.08.2020.
 //
 
-#ifndef NEURO_KOKOHEN_HEADER_H
-#define NEURO_KOKOHEN_HEADER_H
+#ifndef NEURO_REINFORCEMENT_HEADER_H
+#define NEURO_REINFORCEMENT_HEADER_H
 
 
 #include <string.h>
@@ -29,7 +29,7 @@ typedef int t_bool;
 
 // Параметры НС
 // высота карты
-#define MAP_H 5
+#define MAP_H 7
 // ширина карты
 #define MAP_W (MAP_H)
 // Число входов,
@@ -37,11 +37,11 @@ typedef int t_bool;
 #define N_INPUT (N_POS + MAP_W)
 #define STORE (MAP_H - 1)
 // Число нейронов в скрытом слое
-#define N_HIDDEN (30)
+#define N_HIDDEN (10)
 // Число нейронов в скрытом слое
 #define N_MAX_IN_LAYER (100)
 // Скорость обучения
-#define ALPHA 0.01
+#define ALPHA 0.00051
 // Количество эпох обучения
 #define LAST_ERA 7000
 
@@ -108,6 +108,7 @@ typedef struct		s_game
 	int				curr_pos;
 	int				action;
 	t_brain			*brain;
+	char			*buffer[20000]
 }					t_game;
 
 
@@ -115,6 +116,7 @@ typedef struct		s_game
 t_game	init_game(t_brain *brain);
 void	set_new_current(t_game *game);
 void	print_map(t_game *game);
+void	print_map_in_buffer(t_game *game);
 t_bool	move_current(t_game *game);
 void	move_gamer(t_game *game, t_dir dir);
 void	save_position(t_game *game);
@@ -131,8 +133,10 @@ void	calculate_brain(t_brain *brain);
 void	teaching_brain(t_brain *brain);
 
 void	fill_arr(double *arr, int count, double value);
+
+void	print_layer_weight(t_layer *layer);
 void	print_arr_double(double *arr, int size);
 void	print_arr_int(int *arr, int size);
 void	init_layer(t_layer *layer, int n_count, int w_n_count, t_type type);
 
-#endif //NEURO_KOKOHEN_HEADER_H
+#endif //NEURO_REINFORCEMENT_HEADER_H
